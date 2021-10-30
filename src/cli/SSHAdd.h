@@ -15,19 +15,20 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KEEPASSXC_UNLOCKSSHKEY_H
-#define KEEPASSXC_UNLOCKSSHKEY_H
+#ifndef KEEPASSXC_SSHADD_H
+#define KEEPASSXC_SSHADD_H
 
 #include "DatabaseCommand.h"
 
-class UnlockSSHKey : public DatabaseCommand
+class SSHAdd : public DatabaseCommand
 {
 public:
-    UnlockSSHKey();
+    SSHAdd();
 
     int executeWithDatabase(QSharedPointer<Database> db, QSharedPointer<QCommandLineParser> parser);
 
-    static const QCommandLineOption AllOption;
+    static const QCommandLineOption ListOption;
+    static const QCommandLineOption DeleteOption;
 };
 
-#endif // KEEPASSXC_UNLOCKSSHKEY_H
+#endif // KEEPASSXC_SSHADD_H

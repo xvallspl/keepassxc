@@ -238,7 +238,7 @@ void TestCli::testBatchCommands()
     QVERIFY(Commands::getCommand("show"));
     QVERIFY(Commands::getCommand("search"));
 #ifdef WITH_XC_SSHAGENT
-    QVERIFY(Commands::getCommand("unlock-ssh-key"));
+    QVERIFY(Commands::getCommand("ssh-add"));
     ++expectedCommandCount;
 #endif
 
@@ -275,7 +275,7 @@ void TestCli::testInteractiveCommands()
     QVERIFY(Commands::getCommand("show"));
     QVERIFY(Commands::getCommand("search"));
 #ifdef WITH_XC_SSHAGENT
-    QVERIFY(Commands::getCommand("unlock-ssh-key"));
+    QVERIFY(Commands::getCommand("ssh-add"));
     ++expectedCommandCount;
 #endif
 

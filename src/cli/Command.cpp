@@ -40,7 +40,7 @@
 #include "Show.h"
 #include "Utils.h"
 #ifdef WITH_XC_SSHAGENT
-#include "UnlockSSHKey.h"
+#include "SSHAdd.h"
 #endif
 
 #include <QCommandLineParser>
@@ -186,7 +186,7 @@ namespace Commands
         s_commands.insert(QStringLiteral("search"), QSharedPointer<Command>(new Search()));
         s_commands.insert(QStringLiteral("show"), QSharedPointer<Command>(new Show()));
 #ifdef WITH_XC_SSHAGENT
-        s_commands.insert(QStringLiteral("unlock-ssh-key"), QSharedPointer<Command>(new UnlockSSHKey()));
+        s_commands.insert(QStringLiteral("ssh-add"), QSharedPointer<Command>(new SSHAdd()));
 #endif
 
         if (interactive) {

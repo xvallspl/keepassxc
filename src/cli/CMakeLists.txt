@@ -41,7 +41,7 @@ set(cli_SOURCES
         Show.cpp)
 
 if(WITH_XC_SSHAGENT)
-  list(APPEND cli_SOURCES UnlockSSHKey.cpp)
+    list(APPEND cli_SOURCES SSHAdd.cpp)
 endif()
 
 add_library(cli STATIC ${cli_SOURCES})

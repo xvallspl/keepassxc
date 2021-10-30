@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "UnlockSSHKey.h"
+#include "SSHAdd.h"
 
 #include "Utils.h"
 #include "cli/TextStream.h"
@@ -29,31 +29,37 @@
 #include <QCommandLineParser>
 #include <QLocale>
 
-const QCommandLineOption UnlockSSHKey::AllOption =
-    QCommandLineOption(QStringList() << "a"
-                                     << "all",
-                       QObject::tr("Unlock all the SSH keys in the database."));
+const QCommandLineOption SSHAdd::ListOption =
+    QCommandLineOption(QStringList() << "l", QObject::tr("List the SSH keys in the database."));
+const QCommandLineOption SSHAdd::DeleteOption =
+    QCommandLineOption(QStringList() << "d", QObject::tr("Remove the SSH keys from the agent instead of adding them."));
 
-UnlockSSHKey::UnlockSSHKey()
+SSHAdd::SSHAdd()
 {
-    name = QString("unlock-ssh-key");
+    name = QString("ssh-add");
     description =
-        QObject::tr("Unlock one of multiple ssh keys from the database and add them to the running SSH agent.");
-    options.append(UnlockSSHKey::AllOption);
+        QObject::tr("Add ssh keys from the database to the running SSH agent.");
+    options.append(SSHAdd::ListOption);
     optionalArguments.append(
         {QString("entry"), QObject::tr("Name of the entry with an SSH key to unlock."), QString("")});
 }
 
-int UnlockSSHKey::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<QCommandLineParser> parser)
+int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointer<QCommandLineParser> parser)
 {
     auto& out = Utils::STDOUT;
     auto& err = Utils::STDERR;
 
     const QStringList args = parser->positionalArguments();
     const QString& entryPath = args.at(1);
-    bool unlockAll = parser->isSet(UnlockSSHKey::AllOption);
+    bool listOption = parser->isSet(SSHAdd::ListOption);
 
-    if (unlockAll) {
+    if (listOption) {
+        // TODO raise an error or a warning if entryPath is defined.
+        // TODO implement this.
+        return EXIT_FAILURE;
+    }
+
+    if (entryPath.isNull()) {
         sshAgent()->databaseUnlocked(database);
         out << QObject::tr("Successfully added all the SSH keys to the SSH agent.") << endl;
         return EXIT_SUCCESS;
