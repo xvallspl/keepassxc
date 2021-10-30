@@ -67,10 +67,8 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
             }
 
             if (listOption) {
-                out << QObject::tr("%1 %2.").arg(e->title(), key->fingerprint())
-                    << endl;
+                out << QObject::tr("%1 %2.").arg(e->title(), key->fingerprint()) << endl;
                 continue;
-
             }
 
             // TODO check delete option.
