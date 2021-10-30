@@ -49,18 +49,11 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
     auto& err = Utils::STDERR;
 
     const QStringList args = parser->positionalArguments();
-    const QString& entryPath = args.at(1);
     bool listOption = parser->isSet(SSHAdd::ListOption);
-
-    if (listOption) {
-        // TODO raise an error or a warning if entryPath is defined.
-        // TODO implement this.
-        return EXIT_FAILURE;
-    }
 
     // If no entries are specified as arguments, we assume that we should operate on all
     // the available SSH keys.
-    if (entryPath.isNull()) {
+    if (args.size() == 1) {
         for (Entry* e : database->rootGroup()->entriesRecursive()) {
             QSharedPointer<OpenSSHKey> key = SSHAgent::instance()->getKeyFromEntry(database, e);
             if (key.isNull()) {
@@ -73,6 +66,15 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
                 continue;
             }
 
+            if (listOption) {
+                out << QObject::tr("%1 %2.").arg(e->title(), key->fingerprint())
+                    << endl;
+                continue;
+
+            }
+
+            // TODO check delete option.
+
             if (SSHAgent::instance()->addIdentity(*key, settings, database->uuid())) {
                 out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(e->title())
                     << endl;
@@ -81,10 +83,10 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
             }
         }
 
-        sshAgent()->databaseUnlocked(database);
-        out << QObject::tr("Successfully added all the SSH keys to the SSH agent.") << endl;
         return EXIT_SUCCESS;
     }
+
+    const QString& entryPath = args.at(1);
 
     Entry* entry = database->rootGroup()->findEntryByPath(entryPath);
     if (!entry) {
