@@ -535,7 +535,6 @@ QSharedPointer<OpenSSHKey> SSHAgent::getKeyFromEntry(QSharedPointer<Database> db
     }
 
     return QSharedPointer<OpenSSHKey>(key);
-
 }
 
 void SSHAgent::databaseUnlocked(QSharedPointer<Database> db)

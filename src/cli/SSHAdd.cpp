@@ -37,8 +37,7 @@ const QCommandLineOption SSHAdd::DeleteOption =
 SSHAdd::SSHAdd()
 {
     name = QString("ssh-add");
-    description =
-        QObject::tr("Add ssh keys from the database to the running SSH agent.");
+    description = QObject::tr("Add ssh keys from the database to the running SSH agent.");
     options.append(SSHAdd::ListOption);
     optionalArguments.append(
         {QString("entry"), QObject::tr("Name of the entry with an SSH key to unlock."), QString("")});
@@ -70,13 +69,13 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
 
             KeeAgentSettings settings;
             if (!settings.fromEntry(e)) {
-                err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(e->title())
-                    << endl;
+                err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(e->title()) << endl;
                 continue;
             }
 
             if (SSHAgent::instance()->addIdentity(*key, settings, database->uuid())) {
-                out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(e->title()) << endl;
+                out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(e->title())
+                    << endl;
             } else {
                 err << QObject::tr("Could not add SSH key from entry %1 to the SSH agent.").arg(e->title()) << endl;
             }
@@ -86,7 +85,6 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
         out << QObject::tr("Successfully added all the SSH keys to the SSH agent.") << endl;
         return EXIT_SUCCESS;
     }
-
 
     Entry* entry = database->rootGroup()->findEntryByPath(entryPath);
     if (!entry) {
@@ -102,8 +100,7 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
 
     KeeAgentSettings settings;
     if (!settings.fromEntry(entry)) {
-        err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(entryPath)
-            << endl;
+        err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(entryPath) << endl;
         return EXIT_FAILURE;
     }
     // @hifi: Should I check for the KeeAgent settings from the CLI?
@@ -118,5 +115,3 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
     }
     return EXIT_SUCCESS;
 }
-
-
