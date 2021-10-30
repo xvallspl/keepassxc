@@ -59,11 +59,34 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
         return EXIT_FAILURE;
     }
 
+    // If no entries are specified as arguments, we assume that we should operate on all
+    // the available SSH keys.
     if (entryPath.isNull()) {
+        for (Entry* e : database->rootGroup()->entriesRecursive()) {
+            QSharedPointer<OpenSSHKey> key = SSHAgent::instance()->getKeyFromEntry(database, e);
+            if (key.isNull()) {
+                continue;
+            }
+
+            KeeAgentSettings settings;
+            if (!settings.fromEntry(e)) {
+                err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(e->title())
+                    << endl;
+                continue;
+            }
+
+            if (SSHAgent::instance()->addIdentity(*key, settings, database->uuid())) {
+                out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(e->title()) << endl;
+            } else {
+                err << QObject::tr("Could not add SSH key from entry %1 to the SSH agent.").arg(e->title()) << endl;
+            }
+        }
+
         sshAgent()->databaseUnlocked(database);
         out << QObject::tr("Successfully added all the SSH keys to the SSH agent.") << endl;
         return EXIT_SUCCESS;
     }
+
 
     Entry* entry = database->rootGroup()->findEntryByPath(entryPath);
     if (!entry) {
@@ -71,25 +94,29 @@ int SSHAdd::executeWithDatabase(QSharedPointer<Database> database, QSharedPointe
         return EXIT_FAILURE;
     }
 
-    OpenSSHKey key;
+    QSharedPointer<OpenSSHKey> key = SSHAgent::instance()->getKeyFromEntry(database, entry);
+    if (key.isNull()) {
+        err << QObject::tr("Could not get SSH key from entry %1.").arg(entryPath) << endl;
+        return EXIT_FAILURE;
+    }
+
     KeeAgentSettings settings;
-
-    if (settings.toOpenSSHKey(entry, key, true)) {
-        if (!settings.fromEntry(entry)) {
-            return EXIT_FAILURE;
-        }
-        // @hifi: Should I check for the KeeAgent settings from the CLI?
-        // if (!KeeAgentSettings::inEntryAttachments(currentEntry->attachments())) {
-        // return EXIT_FAILURE;
-        // }
-
-        SSHAgent::instance()->addIdentity(key, settings, database->uuid());
-        out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(entryPath) << endl;
-        return EXIT_SUCCESS;
-    } else {
-        err << QObject::tr("Error while adding  SSH key from entry %1 to the SSH agent: %2.")
-                   .arg(entryPath, key.errorString())
+    if (!settings.fromEntry(entry)) {
+        err << QObject::tr("Error while getting the SSH settings for entry %1.").arg(entryPath)
             << endl;
         return EXIT_FAILURE;
     }
+    // @hifi: Should I check for the KeeAgent settings from the CLI?
+    // if (!KeeAgentSettings::inEntryAttachments(currentEntry->attachments())) {
+    // return EXIT_FAILURE;
+    // }
+
+    if (SSHAgent::instance()->addIdentity(*key, settings, database->uuid())) {
+        out << QObject::tr("Successfully added SSH key from entry %1 to the SSH agent.").arg(entryPath) << endl;
+    } else {
+        err << QObject::tr("Could not add SSH key from entry %1 to the SSH agent.").arg(entryPath) << endl;
+    }
+    return EXIT_SUCCESS;
 }
+
+
