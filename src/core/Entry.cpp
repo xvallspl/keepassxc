@@ -1203,7 +1203,7 @@ const Group* Entry::group() const
     return m_group;
 }
 
-void Entry::setGroup(Group* group)
+void Entry::setGroup(Group* group, bool trackPrevious)
 {
     Q_ASSERT(group);
 
@@ -1214,6 +1214,7 @@ void Entry::setGroup(Group* group)
     if (m_group) {
         m_group->removeEntry(this);
         if (m_group->database() && m_group->database() != group->database()) {
+            setPreviousParentGroup(nullptr);
             m_group->database()->addDeletedObject(m_uuid);
 
             // copy custom icon to the new database
@@ -1221,6 +1222,8 @@ void Entry::setGroup(Group* group)
                 && !group->database()->metadata()->hasCustomIcon(iconUuid())) {
                 group->database()->metadata()->addCustomIcon(iconUuid(), icon());
             }
+        } else if (trackPrevious && m_group->database() && group != m_group) {
+            setPreviousParentGroup(m_group);
         }
     }
 
@@ -1408,7 +1411,30 @@ QString Entry::resolveUrl(const QString& url) const
     }
 
     // No valid http URL's found
-    return QString("");
+    return {};
+}
+
+const Group* Entry::previousParentGroup() const
+{
+    if (!database() || !database()->rootGroup()) {
+        return nullptr;
+    }
+    return database()->rootGroup()->findGroupByUuid(m_data.previousParentGroupUuid);
+}
+
+QUuid Entry::previousParentGroupUuid() const
+{
+    return m_data.previousParentGroupUuid;
+}
+
+void Entry::setPreviousParentGroupUuid(const QUuid& uuid)
+{
+    set(m_data.previousParentGroupUuid, uuid);
+}
+
+void Entry::setPreviousParentGroup(const Group* group)
+{
+    setPreviousParentGroupUuid(group ? group->uuid() : QUuid());
 }
 
 bool EntryData::operator==(const EntryData& other) const
@@ -1469,6 +1495,9 @@ bool EntryData::equals(const EntryData& other, CompareItemOptions options) const
         return false;
     }
     if (::compare(excludeFromReports, other.excludeFromReports, options) != 0) {
+        return false;
+    }
+    if (::compare(previousParentGroupUuid, other.previousParentGroupUuid, options) != 0) {
         return false;
     }
 
