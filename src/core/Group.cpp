@@ -123,6 +123,11 @@ QString Group::notes() const
     return m_data.notes;
 }
 
+QString Group::tags() const
+{
+    return m_data.tags;
+}
+
 QImage Group::icon() const
 {
     if (m_data.customIcon.isNull()) {
@@ -353,6 +358,11 @@ void Group::setName(const QString& name)
 void Group::setNotes(const QString& notes)
 {
     set(m_data.notes, notes);
+}
+
+void Group::setTags(const QString& tags)
+{
+    set(m_data.tags, tags);
 }
 
 void Group::setIcon(int iconNumber)
@@ -1262,6 +1272,9 @@ bool Group::GroupData::equals(const Group::GroupData& other, CompareItemOptions 
         return false;
     }
     if (::compare(notes, other.notes, options) != 0) {
+        return false;
+    }
+    if (::compare(tags, other.tags, options) != 0) {
         return false;
     }
     if (::compare(iconNumber, other.iconNumber) != 0) {
