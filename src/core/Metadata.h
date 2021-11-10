@@ -60,6 +60,13 @@ public:
         bool protectNotes;
     };
 
+    struct CustomIconData
+    {
+        QImage image;
+        QString name;
+        QDateTime lastModified;
+    };
+
     void init();
     void clear();
 
@@ -78,7 +85,7 @@ public:
     bool protectPassword() const;
     bool protectUrl() const;
     bool protectNotes() const;
-    QImage customIcon(const QUuid& uuid) const;
+    CustomIconData customIcon(const QUuid& uuid) const;
     bool hasCustomIcon(const QUuid& uuid) const;
     QPixmap customIconPixmap(const QUuid& uuid, IconSize size = IconSize::Default) const;
     QHash<QUuid, QPixmap> customIconsPixmaps(IconSize size = IconSize::Default) const;
@@ -117,7 +124,8 @@ public:
     void setProtectPassword(bool value);
     void setProtectUrl(bool value);
     void setProtectNotes(bool value);
-    void addCustomIcon(const QUuid& uuid, const QImage& image);
+    void
+    addCustomIcon(const QUuid& uuid, const QImage& image, const QString& name = {}, const QDateTime& lastModified = {});
     void removeCustomIcon(const QUuid& uuid);
     void copyCustomIcons(const QSet<QUuid>& iconList, const Metadata* otherMetadata);
     QUuid findCustomIcon(const QImage& candidate);
@@ -153,7 +161,7 @@ private:
     MetadataData m_data;
 
     QHash<QUuid, QIcon> m_customIcons;
-    QHash<QUuid, QImage> m_customIconsRaw;
+    QHash<QUuid, CustomIconData> m_customIconsRaw;
     QList<QUuid> m_customIconsOrder;
     QHash<QByteArray, QUuid> m_customIconsHashes;
 

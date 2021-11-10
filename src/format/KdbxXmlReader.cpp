@@ -347,6 +347,8 @@ void KdbxXmlReader::parseIcon()
 
     QUuid uuid;
     QImage icon;
+    QString name;
+    QDateTime lastModified;
     bool uuidSet = false;
     bool iconSet = false;
 
@@ -357,6 +359,10 @@ void KdbxXmlReader::parseIcon()
         } else if (m_xml.name() == "Data") {
             icon.loadFromData(readBinary());
             iconSet = true;
+        } else if (m_xml.name() == "Name") {
+            name = readString();
+        } else if (m_xml.name() == "LastModificationTime") {
+            lastModified = readDateTime();
         } else {
             skipCurrentElement();
         }
@@ -367,7 +373,7 @@ void KdbxXmlReader::parseIcon()
         if (m_meta->hasCustomIcon(uuid)) {
             uuid = QUuid::createUuid();
         }
-        m_meta->addCustomIcon(uuid, icon);
+        m_meta->addCustomIcon(uuid, icon, name, lastModified);
         return;
     }
 

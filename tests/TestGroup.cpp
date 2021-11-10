@@ -338,12 +338,12 @@ void TestGroup::testCopyCustomIcon()
 
     group->setParent(dbTarget->rootGroup());
     QVERIFY(dbTarget->metadata()->hasCustomIcon(groupIconUuid));
-    QCOMPARE(dbTarget->metadata()->customIcon(groupIconUuid), groupIcon);
+    QCOMPARE(dbTarget->metadata()->customIcon(groupIconUuid).image, groupIcon);
     QCOMPARE(group->icon(), groupIcon);
 
     entry->setGroup(dbTarget->rootGroup());
     QVERIFY(dbTarget->metadata()->hasCustomIcon(entryIconUuid));
-    QCOMPARE(dbTarget->metadata()->customIcon(entryIconUuid), entryIcon);
+    QCOMPARE(dbTarget->metadata()->customIcon(entryIconUuid).image, entryIcon);
     QCOMPARE(entry->icon(), entryIcon);
 }
 
@@ -469,8 +469,8 @@ void TestGroup::testCopyCustomIcons()
     QVERIFY(metaTarget->hasCustomIcon(entry1IconOld));
     QVERIFY(metaTarget->hasCustomIcon(entry1IconNew));
 
-    QCOMPARE(metaTarget->customIcon(group1Icon).pixel(0, 0), qRgb(1, 2, 3));
-    QCOMPARE(metaTarget->customIcon(group2Icon).pixel(0, 0), qRgb(4, 5, 6));
+    QCOMPARE(metaTarget->customIcon(group1Icon).image.pixel(0, 0), qRgb(1, 2, 3));
+    QCOMPARE(metaTarget->customIcon(group2Icon).image.pixel(0, 0), qRgb(4, 5, 6));
 }
 
 void TestGroup::testFindEntry()

@@ -28,6 +28,7 @@
 #include "core/Tools.h"
 #include "crypto/Crypto.h"
 #include "format/KeePass2Writer.h"
+#include "gui/Icons.h"
 #include "keys/PasswordKey.h"
 #include "util/TemporaryFile.h"
 
@@ -213,4 +214,27 @@ void TestDatabase::testEmptyRecycleBinWithHierarchicalData()
     KeePass2Writer writer;
     writer.writeDatabase(&afterCleanup, db.data());
     QVERIFY(afterCleanup.size() < initialSize);
+}
+
+void TestDatabase::testCustomIcons()
+{
+    Database db;
+
+    QUuid uuid1 = QUuid::createUuid();
+    QImage img1 = QImage(":/icons/application/scalable/actions/document-close.svg");
+    Q_ASSERT(!img1.isNull());
+    db.metadata()->addCustomIcon(uuid1, img1);
+    Metadata::CustomIconData iconData = db.metadata()->customIcon(uuid1);
+    QCOMPARE(iconData.image, img1);
+    QVERIFY(iconData.name.isNull());
+    QVERIFY(iconData.lastModified.isNull());
+
+    QUuid uuid2 = QUuid::createUuid();
+    QImage img2 = QImage(":/icons/application/scalable/actions/document-new.svg");
+    QDateTime date = QDateTime::currentDateTimeUtc();
+    db.metadata()->addCustomIcon(uuid2, img2, "Test", date);
+    iconData = db.metadata()->customIcon(uuid2);
+    QCOMPARE(iconData.image, img2);
+    QCOMPARE(iconData.name, QString("Test"));
+    QCOMPARE(iconData.lastModified, date);
 }

@@ -168,7 +168,7 @@ QImage Entry::icon() const
         Q_ASSERT(database());
 
         if (database()) {
-            return database()->metadata()->customIcon(m_data.customIcon);
+            return database()->metadata()->customIcon(m_data.customIcon).image;
         } else {
             return QImage();
         }

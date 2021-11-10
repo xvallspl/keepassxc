@@ -135,7 +135,7 @@ QImage Group::icon() const
     } else {
         Q_ASSERT(m_db);
         if (m_db) {
-            return m_db->metadata()->customIcon(m_data.customIcon);
+            return m_db->metadata()->customIcon(m_data.customIcon).image;
         } else {
             return QImage();
         }

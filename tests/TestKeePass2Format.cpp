@@ -113,7 +113,7 @@ void TestKeePass2Format::testXmlCustomIcons()
     QCOMPARE(m_xmlDb->metadata()->customIconsOrder().size(), 1);
     QUuid uuid = QUuid::fromRfc4122(QByteArray::fromBase64("++vyI+daLk6omox4a6kQGA=="));
     QVERIFY(m_xmlDb->metadata()->hasCustomIcon(uuid));
-    QImage icon = m_xmlDb->metadata()->customIcon(uuid);
+    QImage icon = m_xmlDb->metadata()->customIcon(uuid).image;
     QCOMPARE(icon.width(), 16);
     QCOMPARE(icon.height(), 16);
 

@@ -19,6 +19,7 @@
 #include "EditWidgetIcons.h"
 #include "ui_EditWidgetIcons.h"
 
+#include "core/Clock.h"
 #include "core/Config.h"
 #include "core/Database.h"
 #include "core/Metadata.h"
@@ -242,7 +243,7 @@ void EditWidgetIcons::addCustomIconFromFile()
                 auto icon = QImage(filename);
                 if (icon.isNull()) {
                     errornames << filename;
-                } else if (!addCustomIcon(icon)) {
+                } else if (!addCustomIcon(icon, QFileInfo(filename).baseName())) {
                     // Icon already exists in database
                     ++numexisting;
                 }
@@ -279,7 +280,7 @@ void EditWidgetIcons::addCustomIconFromFile()
     }
 }
 
-bool EditWidgetIcons::addCustomIcon(const QImage& icon)
+bool EditWidgetIcons::addCustomIcon(const QImage& icon, const QString& name)
 {
     bool added = false;
     if (m_db) {
@@ -292,7 +293,7 @@ bool EditWidgetIcons::addCustomIcon(const QImage& icon)
         QUuid uuid = m_db->metadata()->findCustomIcon(scaledicon);
         if (uuid.isNull()) {
             uuid = QUuid::createUuid();
-            m_db->metadata()->addCustomIcon(uuid, scaledicon);
+            m_db->metadata()->addCustomIcon(uuid, scaledicon, name, Clock::currentDateTimeUtc());
             m_customIconModel->setIcons(m_db->metadata()->customIconsPixmaps(IconSize::Default),
                                         m_db->metadata()->customIconsOrder());
             added = true;
